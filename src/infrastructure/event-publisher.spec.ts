@@ -36,9 +36,9 @@ describe('EventPublisher', () => {
 
         const mockCallback = jest.fn((x) => x);
 
-        eventPublisher.subscribe('InvoiceReceived', mockCallback);
-        eventPublisher.subscribe('InvoiceReceived', mockCallback);
-        eventPublisher.subscribe('InvoiceValidated', mockCallback);
+        eventPublisher.subscribe(InvoiceReceived.name, mockCallback);
+        eventPublisher.subscribe(InvoiceReceived.name, mockCallback);
+        eventPublisher.subscribe(InvoiceValidated.name, mockCallback);
 
         const events = [
           new InvoiceReceived(invoiceId, amount, filepath, sendAt),
