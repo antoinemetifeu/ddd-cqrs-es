@@ -13,7 +13,7 @@ import { ValidateInvoice } from './validate-invoice';
 export class RetributionCommission {
   #retributionCommissionProjection = new RetributionCommissionProjection();
 
-  constructor(private readonly id: string, history: IEvent[] = []) {
+  constructor(private readonly aggregateId: string, history: IEvent[] = []) {
     this.apply(history);
   }
 
@@ -24,6 +24,7 @@ export class RetributionCommission {
 
     return this.apply([
       new InvoiceReceived(
+        this.aggregateId,
         sendInvoice.id,
         sendInvoice.amount,
         sendInvoice.filePath,
@@ -39,6 +40,7 @@ export class RetributionCommission {
 
     return this.apply([
       new InvoiceValidated(
+        this.aggregateId,
         validateInvoice.invoiceId,
         validateInvoice.validatorId,
         validateInvoice.validationAt,
@@ -57,12 +59,17 @@ export class RetributionCommission {
     }
 
     return this.apply([
-      new InvoiceInvalidated(invoiceId, validatorId, validationAt),
+      new InvoiceInvalidated(
+        this.aggregateId,
+        invoiceId,
+        validatorId,
+        validationAt,
+      ),
     ]);
   }
 
   public generateSEPAFile(invoiceId: string) {
-    return this.apply([new SEPAFileGenerated(invoiceId)]);
+    return this.apply([new SEPAFileGenerated(this.aggregateId, invoiceId)]);
   }
 
   private onInvoiceReceived(_event: InvoiceReceived) {

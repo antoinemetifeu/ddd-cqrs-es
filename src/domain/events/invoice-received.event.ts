@@ -2,6 +2,7 @@ import { IEvent } from './event.interface';
 
 export class InvoiceReceived implements IEvent {
   constructor(
+    public readonly aggregateId: string,
     public readonly invoiceId: string,
     public readonly amount: number,
     public readonly filePath: string,

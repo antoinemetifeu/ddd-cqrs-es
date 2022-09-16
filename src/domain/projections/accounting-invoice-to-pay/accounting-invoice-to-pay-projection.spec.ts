@@ -6,7 +6,8 @@ import { AccountingInvoicesToPayReadModel } from '../../read-models/accounting-i
 import { SEPAFileGenerated } from '@domain/events/sepa-file-generated.event';
 
 describe('AccountingInvoicesToPayProjection', () => {
-  const invoiceId = '12345';
+  const aggregateId = '12345';
+  const invoiceId = 'invoice-12345';
   const amount = 150;
   const sendAt = new Date();
   const validatorId = '98765';
@@ -22,7 +23,12 @@ describe('AccountingInvoicesToPayProjection', () => {
           new AccountingInvoicesToPayProjection(repository);
 
         accountingWaitingInvoicesToPayProjection.when(
-          new InvoiceValidated(invoiceId, validatorId, validationAt),
+          new InvoiceValidated(
+            aggregateId,
+            invoiceId,
+            validatorId,
+            validationAt,
+          ),
         );
 
         const readModel = accountingWaitingInvoicesToPayProjection.readModel;
@@ -54,7 +60,7 @@ describe('AccountingInvoicesToPayProjection', () => {
           new AccountingInvoicesToPayProjection(repository);
 
         accountingWaitingInvoicesToPayProjection.when(
-          new SEPAFileGenerated(invoiceId),
+          new SEPAFileGenerated(aggregateId, invoiceId),
         );
 
         const readModel = accountingWaitingInvoicesToPayProjection.readModel;

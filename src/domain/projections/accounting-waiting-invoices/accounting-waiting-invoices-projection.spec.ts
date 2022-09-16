@@ -6,7 +6,8 @@ import { InvoiceReadModel } from '../../read-models/invoice.read-model';
 import { InMemoryAccountingWaitingInvoicesRepository } from '@infrastructure/projections/in-memory-accounting-waiting-invoices.repository';
 
 describe('AccountingWaitingInvoicesProjection', () => {
-  const invoiceId = '12345';
+  const aggregateId = '12345';
+  const invoiceId = 'invoice-12345';
   const amount = 150;
   const filePath = '/my-invoice.pdf';
   const sendAt = new Date();
@@ -23,7 +24,7 @@ describe('AccountingWaitingInvoicesProjection', () => {
           new AccountingWaitingInvoicesProjection(repository);
 
         accountingWaitingInvoicesProjection.when(
-          new InvoiceReceived(invoiceId, amount, filePath, sendAt),
+          new InvoiceReceived(aggregateId, invoiceId, amount, filePath, sendAt),
         );
 
         const readModel = accountingWaitingInvoicesProjection.readModel;
@@ -55,7 +56,12 @@ describe('AccountingWaitingInvoicesProjection', () => {
           new AccountingWaitingInvoicesProjection(repository);
 
         accountingWaitingInvoicesProjection.when(
-          new InvoiceValidated(invoiceId, validatorId, validationAt),
+          new InvoiceValidated(
+            aggregateId,
+            invoiceId,
+            validatorId,
+            validationAt,
+          ),
         );
 
         const readModel = accountingWaitingInvoicesProjection.readModel;

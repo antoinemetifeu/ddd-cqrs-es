@@ -4,7 +4,8 @@ import { EventPublisher } from './event-publisher';
 import { InMemoryEventStore } from './in-memory-event-store';
 
 describe('EventPublisher', () => {
-  const invoiceId = '12345';
+  const aggregateId = '12345';
+  const invoiceId = 'invoice-12345';
   const amount = 2_000;
   const filepath = 'invoice.pdf';
   const sendAt = new Date();
@@ -20,8 +21,13 @@ describe('EventPublisher', () => {
         const eventPublisher = new EventPublisher(store);
 
         const events = [
-          new InvoiceReceived(invoiceId, amount, filepath, sendAt),
-          new InvoiceValidated(invoiceId, validatorId, validationAt),
+          new InvoiceReceived(aggregateId, invoiceId, amount, filepath, sendAt),
+          new InvoiceValidated(
+            aggregateId,
+            invoiceId,
+            validatorId,
+            validationAt,
+          ),
         ];
 
         eventPublisher.publish(events);
@@ -41,8 +47,13 @@ describe('EventPublisher', () => {
         eventPublisher.subscribe(InvoiceValidated.name, mockCallback);
 
         const events = [
-          new InvoiceReceived(invoiceId, amount, filepath, sendAt),
-          new InvoiceValidated(invoiceId, validatorId, validationAt),
+          new InvoiceReceived(aggregateId, invoiceId, amount, filepath, sendAt),
+          new InvoiceValidated(
+            aggregateId,
+            invoiceId,
+            validatorId,
+            validationAt,
+          ),
         ];
 
         eventPublisher.publish(events);
