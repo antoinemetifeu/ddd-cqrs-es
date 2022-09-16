@@ -7,8 +7,8 @@ export class EventPublisher implements IEventPublisher {
 
   constructor(private readonly eventStore: IEventStore) {}
 
-  public publish(events: IEvent[]) {
-    this.eventStore.save(events);
+  public publish(events: IEvent[], eventSequenceNumber: number) {
+    this.eventStore.save(events, eventSequenceNumber);
 
     events.forEach((event) => {
       const eventType = event.constructor.name;

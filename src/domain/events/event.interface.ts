@@ -1,1 +1,3 @@
-export interface IEvent {}
+export interface IEvent {
+  readonly aggregateId: string;
+}

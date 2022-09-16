@@ -29,8 +29,9 @@ describe('EventPublisher', () => {
             validationAt,
           ),
         ];
+        const lastEventSequenceNumber = 0;
 
-        eventPublisher.publish(events);
+        eventPublisher.publish(events, lastEventSequenceNumber);
 
         expect(store.save).toHaveBeenCalledTimes(1);
       });
@@ -55,13 +56,40 @@ describe('EventPublisher', () => {
             validationAt,
           ),
         ];
+        const lastEventSequenceNumber = 0;
 
-        eventPublisher.publish(events);
+        eventPublisher.publish(events, lastEventSequenceNumber);
 
         expect(mockCallback.mock.calls.length).toBe(3);
         expect(mockCallback.mock.results[0].value).toStrictEqual(events[0]);
         expect(mockCallback.mock.results[1].value).toStrictEqual(events[0]);
         expect(mockCallback.mock.results[2].value).toStrictEqual(events[1]);
+      });
+
+      test('Then events wrong event number version', () => {
+        const store = new InMemoryEventStore();
+        jest.spyOn(store, 'save');
+
+        const eventPublisher = new EventPublisher(store);
+
+        const events = [
+          new InvoiceReceived(aggregateId, invoiceId, amount, filepath, sendAt),
+          new InvoiceValidated(
+            aggregateId,
+            invoiceId,
+            validatorId,
+            validationAt,
+          ),
+        ];
+        const lastEventSequenceNumber = 0;
+
+        eventPublisher.publish(events, lastEventSequenceNumber);
+
+        expect(store.save).toHaveBeenCalledTimes(1);
+
+        expect(() => {
+          eventPublisher.publish(events, 0);
+        }).toThrow();
       });
     });
   });

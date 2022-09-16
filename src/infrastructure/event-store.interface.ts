@@ -1,5 +1,6 @@
 import { IEvent } from '@domain/events/event.interface';
 
 export interface IEventStore {
-  save(events: IEvent[]);
+  get(): [IEvent[], number];
+  save(events: IEvent[], eventSequenceNumber: number);
 }
