@@ -24,9 +24,9 @@ describe('RetributionCommision', () => {
           new SendInvoice(invoiceId, amount, filePath, sendAt),
         );
 
-        expect(event).toStrictEqual(
+        expect(event).toStrictEqual([
           new InvoiceReceived(invoiceId, amount, filePath, sendAt),
-        );
+        ]);
       });
     });
 
@@ -69,9 +69,9 @@ describe('RetributionCommision', () => {
           new ValidateInvoice(invoiceId, validatorId, validationAt),
         );
 
-        expect(event).toStrictEqual(
+        expect(event).toStrictEqual([
           new InvoiceValidated(invoiceId, validatorId, validationAt),
-        );
+        ]);
       });
     });
   });
@@ -88,9 +88,9 @@ describe('RetributionCommision', () => {
           new SendInvoice(invoiceId, amount, filePath, sendAt),
         );
 
-        expect(event).toStrictEqual(
+        expect(event).toStrictEqual([
           new InvoiceReceived(invoiceId, amount, filePath, sendAt),
-        );
+        ]);
       });
     });
 
@@ -103,7 +103,7 @@ describe('RetributionCommision', () => {
 
         const event = retributionCommission.generateSEPAFile(invoiceId);
 
-        expect(event).toStrictEqual(new SEPAFileGenerated(invoiceId));
+        expect(event).toStrictEqual([new SEPAFileGenerated(invoiceId)]);
       });
     });
 
@@ -119,9 +119,9 @@ describe('RetributionCommision', () => {
             new SendInvoice(invoiceId, amount, filePath, sendAt),
           );
 
-          expect(event).toStrictEqual(
+          expect(event).toStrictEqual([
             new InvoiceReceived(invoiceId, amount, filePath, sendAt),
-          );
+          ]);
         });
       });
     });

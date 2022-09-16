@@ -14,7 +14,7 @@ export class RetributionCommission {
   #retributionCommissionProjection = new RetributionCommissionProjection();
 
   constructor(private readonly id: string, history: IEvent[] = []) {
-    this.loadFromHistory(history);
+    this.apply(history);
   }
 
   public sendInvoice(sendInvoice: SendInvoice) {
@@ -22,14 +22,14 @@ export class RetributionCommission {
       throw new PendingRetributionInvoiceException();
     }
 
-    return this.apply(
+    return this.apply([
       new InvoiceReceived(
         sendInvoice.id,
         sendInvoice.amount,
         sendInvoice.filePath,
         sendInvoice.sendAt,
       ),
-    );
+    ]);
   }
 
   public validateInvoice(validateInvoice: ValidateInvoice) {
@@ -37,13 +37,13 @@ export class RetributionCommission {
       throw new Error('No Pending Invoice');
     }
 
-    return this.apply(
+    return this.apply([
       new InvoiceValidated(
         validateInvoice.invoiceId,
         validateInvoice.validatorId,
         validateInvoice.validationAt,
       ),
-    );
+    ]);
   }
 
   // TODO: add class for args
@@ -56,13 +56,13 @@ export class RetributionCommission {
       throw new Error('No Pending Invoice');
     }
 
-    return this.apply(
+    return this.apply([
       new InvoiceInvalidated(invoiceId, validatorId, validationAt),
-    );
+    ]);
   }
 
   public generateSEPAFile(invoiceId: string) {
-    return this.apply(new SEPAFileGenerated(invoiceId));
+    return this.apply([new SEPAFileGenerated(invoiceId)]);
   }
 
   private onInvoiceReceived(_event: InvoiceReceived) {
@@ -81,16 +81,12 @@ export class RetributionCommission {
     // TODO: change decision projection for that event here
   }
 
-  private apply(event: IEvent) {
-    const handler = this[`on${event.constructor.name}`];
-    handler && handler.call(this, event);
-
-    return event;
-  }
-
-  public loadFromHistory(events: IEvent[]) {
+  private apply(events: IEvent[]) {
     events.forEach((event) => {
-      this.apply(event);
+      const handler = this[`on${event.constructor.name}`];
+      handler && handler.call(this, event);
     });
+
+    return events;
   }
 }
